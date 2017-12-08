@@ -1,0 +1,29 @@
+{
+  "name": "ibm-plex-mono-ligatures",
+  "version": "0.0.1",
+  "description": "A tool to add ligature glyphs to IBM Plex Mono.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chengluyu/ibm-plex-mono-ligatures.git"
+  },
+  "keywords": [
+    "font",
+    "ligature"
+  ],
+  "author": "Synthetic Dream",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chengluyu/ibm-plex-mono-ligatures/issues"
+  },
+  "homepage": "https://github.com/chengluyu/ibm-plex-mono-ligatures#readme",
+  "devDependencies": {},
+  "dependencies": {
+    "argparse": "^1.0.9",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.6.2"
+  }
+}
