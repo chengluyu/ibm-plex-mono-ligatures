@@ -31,7 +31,7 @@ parser.addArgument(['-o', '--output'], {
   help: 'The output directory',
   action: 'store',
   dest: 'output',
-  required: true
+  defaultValue: path.join('.', 'build')
 });
 
 const args = parser.parseArgs();
@@ -44,6 +44,7 @@ function dumpAll(inputdir) {
     if (path.extname(filename) === '.ttf') {
       console.log(`Dump '${path.join(inputdir, filename)}'`);
       let command = otfccdump;
+      // on Windows otfccdump will generate BOM by default
       if (os.platform() === 'win32') {
         command += ' --no-bom';
       }
@@ -58,20 +59,64 @@ function dumpAll(inputdir) {
       }
     }
     return null;
-  }).filter(obj => obj !== null)
+  }).filter(obj => obj !== null);
 }
 
 function buildAll(fonts, outputdir) {
-  mkdirp('./build')
+  mkdirp(outputdir);
   for (const font of fonts) {
     const filename = font.filename;
     delete font['filename'];
     const stdin = JSON.stringify(font);
-    // console.log(`${otfccbuild} -o ${path.join(outputdir, filename)}`);
     console.log(`Build '${path.join(outputdir, filename)}'`);
     child_process.execSync(`${otfccbuild} -o ${path.join(outputdir, filename)}`, { input: stdin });
   }
 }
 
+function addGlyphs(font, name, data) {
+  function add(name, data) {
+    font.glyf[name] = data;
+    font.glyph_order.push(name);
+    font.maxp.numGlyphs++;
+  }
+  // add ligature placeholder glyph
+  add('LIG', { advanceWidth: 600 });
+  add('hyphen_greater.liga', {
+    "advanceWidth": 600,
+    "references": [
+      {
+        "glyph": "emdash",
+        "x": -500,
+        "y": 0,
+        "a": 1.3,
+        "b": 0,
+        "c": 0,
+        "d": 1
+      },
+      {
+        "glyph": "greater",
+        "x": 0,
+        "y": 0,
+        "a": 1,
+        "b": 0,
+        "c": 0,
+        "d": 1
+      }
+    ]
+  });
+}
+
+function addRules(font) {
+
+}
+
+function processAll(fonts) {
+  for (const font of fonts) {
+    addGlyphs(font);
+    addRules(font);
+  }
+}
+
 const fonts = dumpAll(args.input);
+processAll(fonts);
 buildAll(fonts, args.output);
