@@ -23,6 +23,8 @@
   "devDependencies": {},
   "dependencies": {
     "argparse": "^1.0.9",
+    "left-pad": "^1.2.0",
+    "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.2"
   }
