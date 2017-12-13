@@ -41,7 +41,8 @@ const otfccbuild = path.join(args.otfcc, 'otfccbuild');
 
 function dumpAll(inputdir) {
   return fs.readdirSync(inputdir).map(filename => {
-    if (path.extname(filename) === '.ttf') {
+    const extname = path.extname(filename);
+    if (extname === '.ttf' || extname === '.otf') {
       console.log(`Dump '${path.join(inputdir, filename)}'`);
       let command = otfccdump;
       // on Windows otfccdump will generate BOM by default
@@ -107,7 +108,78 @@ function addGlyphs(font, name, data) {
 }
 
 function addRules(font) {
+  const {lookups, features, languages} = font['GSUB'];
 
+  function addLookup(name, value) {
+    if (lookups[name]) {
+      throw new Error('lookup name already exists');
+    }
+    lookups[name] = value;
+  }
+
+  function addFeature(name, value) {
+    if (features[name]) {
+      throw new Error('feature name already exists');
+    }
+    features[name] = value;
+    for (const lang of Object.keys(languages)) {
+      languages[lang].features.push(name);
+    }
+  }
+
+  addFeature("calt_00030", [
+    "lookup_calt_17"
+  ]);
+
+  addFeature("ss06_00031", [
+    "lookup_ss06_18"
+  ]);
+
+  addLookup("lookup_calt_17", {
+    "type": "gsub_chaining",
+    "flags": {},
+    "subtables": [
+      {
+        "match": [
+          [ "hyphen" ],
+          [ "greater" ]
+        ],
+        "apply": [
+          {
+            "at": 0,
+            "lookup": "lookup_ss06_18"
+          }
+        ],
+        "inputBegins": 0,
+        "inputEnds": 1
+      },
+      {
+        "match": [
+          [ "LIG" ],
+          [ "greater" ]
+        ],
+        "apply": [
+          {
+            "at": 1,
+            "lookup": "lookup_ss06_18"
+          }
+        ],
+        "inputBegins": 1,
+        "inputEnds": 2
+      }
+    ]
+  });
+
+  addLookup("lookup_ss06_18", {
+    "type": "gsub_single",
+    "flags": {},
+    "subtables": [
+      {
+        "hyphen": "LIG",
+        "greater": "hyphen_greater.liga"
+      }
+    ]
+  });
 }
 
 function processAll(fonts) {
