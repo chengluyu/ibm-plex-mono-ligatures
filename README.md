@@ -4,6 +4,8 @@
 
 ## Preview
 
+![Preview](docs/preview.png)
+
 ## Usage
 
 **This project is still under development. Advice and PR are welcome!** :laughing:
