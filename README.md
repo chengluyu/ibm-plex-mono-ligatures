@@ -21,6 +21,7 @@
 ## Changelog
 
 * Dec 13, 2017: add support for `->`.
+* Dec 15, 2017: add support for `=>` and `!=`.
 
 ## LICENSE
 
