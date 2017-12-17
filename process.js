@@ -25,6 +25,10 @@ const style_map = {
     'single': 'g.alt01',
     'double2': 'g.alt02'
   },
+  a: {
+    'double': 'a',
+    'single': 'a.alt01'
+  },
   /**
    * Get alternate glyph name
    * @param {string} glyphName 
@@ -45,6 +49,7 @@ const style_map = {
 function useAlternate(font) {
   swapKey(font['glyf'], 'zero', style_map.get('zero', args.zero_style));
   swapKey(font['glyf'], 'g', style_map.get('g', args.g_style));
+  swapKey(font['glyf'], 'a', style_map.get('a', args.a_style));
 }
 
 /**
