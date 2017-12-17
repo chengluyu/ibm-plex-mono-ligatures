@@ -44,4 +44,11 @@ parser.addArgument('--g-style', {
   defaultValue: 'double'
 });
 
+parser.addArgument('--a-style', {
+  help: 'The style of "a", valid values are "single" or "double"',
+  action: 'store',
+  dest: 'a_style',
+  defaultValue: 'double'
+});
+
 module.exports = parser.parseArgs();
