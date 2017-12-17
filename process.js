@@ -58,112 +58,25 @@ function useAlternate(font) {
  * @param {Font} font 
  */
 function addGlyphs(font) {
-  function add(name, data) {
-    font.glyf[name] = data;
-    font.glyph_order.push(name);
+  const glyphs = require('./glyphs.json');
+  for (const glyphName of Object.keys(glyphs)) {
+    font.glyf[glyphName] = glyphs[glyphName];
+    font.glyph_order.push(glyphName);
     font.maxp.numGlyphs++;
   }
-  // add ligature placeholder glyph
-  add('LIG', { advanceWidth: 600 });
-  add('hyphen_greater.liga', {
-    "advanceWidth": 600,
-    "references": [
-      {
-        "glyph": "emdash",
-        "x": -500,
-        "y": -7,
-        "a": 1.3,
-        "b": 0,
-        "c": 0,
-        "d": 1
-      },
-      {
-        "glyph": "greater",
-        "x": 0,
-        "y": 0,
-        "a": 1,
-        "b": 0,
-        "c": 0,
-        "d": 1
-      }
-    ]
-  });
-  add('equal_greater.liga', {
-    "advanceWidth": 600,
-    "references": [
-      {
-        "glyph": "equal",
-        "x": -500,
-        "y": 0,
-        "a": 1.5,
-        "b": 0,
-        "c": 0,
-        "d": 1
-      },
-      {
-        "glyph": "greater",
-        "x": 0,
-        "y": 0,
-        "a": 1,
-        "b": 0,
-        "c": 0,
-        "d": 1
-      }
-    ]
-  });
-  add('equal_equal.liga', {
-    "advanceWidth": 600,
-    "references": [
-      {
-        "glyph": "equal",
-        "x": -570,
-        "y": 0,
-        "a": 1.9,
-        "b": 0,
-        "c": 0,
-        "d": 1
-      },
-    ]
-  });
-  add('not_equal.liga', {
-    "advanceWidth": 600,
-    "references": [
-      {
-        "glyph": "equal",
-        "x": -570,
-        "y": 0,
-        "a": 1.9,
-        "b": 0,
-        "c": 0,
-        "d": 1
-      },
-      {
-        "glyph": "slash",
-        "x": -300,
-        "y": 0,
-        "a": 1,
-        "b": 0,
-        "c": 0,
-        "d": 1
-      }
-    ]
-  });
 }
 
 function addRules(font) {
-
   const {lookups, features, languages} = font['GSUB'];
 
   function addLookup(name, value) {
-    // console.log('Lookup', name, 'Lookup Object', inspect(value, false, null));
     if (lookups[name]) {
-      // throw new Error('lookup name already exists');
+      throw new Error('lookup name already exists');
     }
     lookups[name] = value;
   }
 
   function addFeature(name, value) {
-    // console.log('Feature', name, value);
     if (features[name]) {
       throw new Error('feature name already exists');
     }
