@@ -65,7 +65,7 @@ function addGlyphs(font) {
       {
         "glyph": "emdash",
         "x": -500,
-        "y": 0,
+        "y": -7,
         "a": 1.3,
         "b": 0,
         "c": 0,
@@ -112,7 +112,7 @@ function addGlyphs(font) {
         "glyph": "equal",
         "x": -550,
         "y": 0,
-        "a": 1.8,
+        "a": 1.9,
         "b": 0,
         "c": 0,
         "d": 1
