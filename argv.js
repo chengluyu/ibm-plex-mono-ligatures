@@ -30,4 +30,18 @@ parser.addArgument(['-o', '--output'], {
   defaultValue: path.join('.', 'build')
 });
 
+parser.addArgument('--zero-style', {
+  help: 'The style of "0", valid values are "circle", "slashed" or "dotted"',
+  action: 'store',
+  dest: 'zero_style',
+  defaultValue: 'dotted'
+});
+
+parser.addArgument('--g-style', {
+  help: 'The style of "g", valid values are "single", "double" or "double2"',
+  action: 'store',
+  dest: 'g_style',
+  defaultValue: 'double'
+});
+
 module.exports = parser.parseArgs();
