@@ -22,6 +22,7 @@
 
 * Dec 13, 2017: add support for `->`.
 * Dec 15, 2017: add support for `=>` and `!=`.
+* Dec 17, 2017: add alternate glyphs replacement for 'g' and '0'.
 
 ## LICENSE
 

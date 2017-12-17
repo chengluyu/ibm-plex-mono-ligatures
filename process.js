@@ -1,8 +1,57 @@
 const leftPad = require('left-pad');
 const inspect = require('util').inspect
+const args = require('./argv')
 
+function swapKey(any, key1, key2) {
+  if (key1 === key2) {
+    return;
+  }
+  const temp = any[key1];
+  any[key1] = any[key2];
+  any[key2] = temp;
+}
 
-function addGlyphs(font, name, data) {
+/**
+ * Map from style name to altername glyph name
+ */
+const style_map = {
+  zero: {
+    'dotted': 'zero',
+    'slashed': 'zero.alt01',
+    'circle': 'zero.alt02'
+  },
+  g: {
+    'double': 'g',
+    'single': 'g.alt01',
+    'double2': 'g.alt02'
+  },
+  /**
+   * Get alternate glyph name
+   * @param {string} glyphName 
+   * @param {string} styleName 
+   */
+  get(glyphName, styleName) {
+    const alternateName = this[glyphName][styleName];
+    if (typeof alternateName !== 'string') {
+      throw new Error(`invalid style "${glyphName}" for '${glyphName}'`)
+    }
+    return alternateName;
+  }
+}
+
+/**
+ * Replace some glyph with their alternates.
+ */
+function useAlternate(font) {
+  swapKey(font['glyf'], 'zero', style_map.get('zero', args.zero_style));
+  swapKey(font['glyf'], 'g', style_map.get('g', args.g_style));
+}
+
+/**
+ * Add ligature glyphs to font object
+ * @param {Font} font 
+ */
+function addGlyphs(font) {
   function add(name, data) {
     font.glyf[name] = data;
     font.glyph_order.push(name);
@@ -209,6 +258,7 @@ function addRules(font) {
 
 module.exports = function processAll(fonts) {
   for (const font of fonts) {
+    useAlternate(font);
     addGlyphs(font);
     addRules(font);
   }
