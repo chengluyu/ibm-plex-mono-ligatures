@@ -1,6 +1,7 @@
 const leftPad = require('left-pad');
 const inspect = require('util').inspect
 const args = require('./argv')
+const assert = require('assert');
 
 function swapKey(any, key1, key2) {
   if (key1 === key2) {
@@ -110,12 +111,26 @@ function addGlyphs(font) {
       }
     ]
   });
+  add('equal_equal.liga', {
+    "advanceWidth": 600,
+    "references": [
+      {
+        "glyph": "equal",
+        "x": -570,
+        "y": 0,
+        "a": 1.9,
+        "b": 0,
+        "c": 0,
+        "d": 1
+      },
+    ]
+  });
   add('not_equal.liga', {
     "advanceWidth": 600,
     "references": [
       {
         "glyph": "equal",
-        "x": -550,
+        "x": -570,
         "y": 0,
         "a": 1.9,
         "b": 0,
@@ -179,12 +194,6 @@ function addRules(font) {
   let featureCounter = getMaxFeatureNumber();
   let lookupCounter = getMaxLookupNumber();
 
-  function addCaltFeature(lookups) {
-    const name = `calt_${leftPad(++featureCounter, 5, 0)}`;
-    addFeature(name, lookups);
-    return name;
-  }
-
   function addSingleSub(dict) {
     const name = `lookup_ss00_${++lookupCounter}`;
     addLookup(name, {
@@ -195,69 +204,69 @@ function addRules(font) {
     return name;
   }
 
-  function addChainingSub(glyphNames, applyLookup) {
+  function getGlyphName(ch) {
+    const name = font.cmap[ch.charCodeAt(0)];
+    if (typeof name === 'string') {
+      return name;
+    }
+    throw new Error(`no glyph name for '${ch}'`);
+  }
+
+  function addTwoLetterLigature(from, to) {
+    assert.equal(from.length, 2);
+    const first = getGlyphName(from.charAt(0));
+    const second = getGlyphName(from.charAt(1));
+    // name of chaining substitution
     const name = `lookup_calt_${++lookupCounter}`;
-    const subtables = [];
-    for (let i = 0; i < glyphNames.length; i++) {
-      const match = [];
-      for (let j = 0; j < i; j++) {
-        match.push(['LIG']);
-      }
-      for (let j = i; j < glyphNames.length; j++) {
-        match.push([glyphNames[j]]);
-      }
-      subtables.push({
-        match,
-        apply: [{
-          at: i,
-          lookup: applyLookup
-        }],
-        inputBegins: i,
-        inputEnds: i + 1
+    let firstLookup;
+    let secondLookup;
+    if (first === second) {
+      // we need two lookups
+      firstLookup = addSingleSub({ [first]: 'LIG' });
+      secondLookup = addSingleSub({ [second]: to });
+    } else {
+      // one is enough
+      firstLookup = secondLookup = addSingleSub({
+        [first]: 'LIG',
+        [second]: to
       });
     }
+    // add chaining substitution
     addLookup(name, {
       type: 'gsub_chaining',
       flags: {},
-      subtables
+      subtables: [
+        {
+          match: [ [ first ], [ second ] ],
+          apply: [ { at: 0, lookup: firstLookup } ],
+          inputBegins: 0,
+          inputEnds: 1
+        },
+        {
+          match: [ [ 'LIG' ], [ second ] ],
+          apply: [ { at: 1, lookup: secondLookup } ],
+          inputBegins: 1,
+          inputEnds: 2
+        }
+      ]
     });
     return name;
   }
 
-  function stringToGlyphNameSequence(str) {
-    return [...str].map(ch => {
-      const name = font.cmap[ch.charCodeAt(0)];
-      if (typeof name === 'string') {
-        return name;
-      }
-      throw new Error(`no glyph name for '${ch}'`);
-    })
-  }
-
   function addProgrammingLigatures(dict) {
-    const chainings = [];
+    const chainingLookups = [];
     for (const from of Object.keys(dict)) {
-      const liga = dict[from];
-      const glyphNames = stringToGlyphNameSequence(from);
-      // generate single substitution map
-      const singleSub = {};
-      for (let i = 0; i < glyphNames.length - 1; i++) {
-        singleSub[glyphNames[i]] = 'LIG';
-      }
-      singleSub[glyphNames[glyphNames.length - 1]] = liga;
-      // add single substitution
-      const singleSubName = addSingleSub(singleSub);
-      // add chaining context sub
-      const chainingSubName = addChainingSub(glyphNames, singleSubName);
-      chainings.push(chainingSubName);
+      chainingLookups.push(addTwoLetterLigature(from, dict[from]));
     }
-    addCaltFeature(chainings);
+    const name = `calt_${leftPad(++featureCounter, 5, 0)}`;
+    addFeature(name, chainingLookups);
   }
 
   addProgrammingLigatures({
     '->': 'hyphen_greater.liga',
     '=>': 'equal_greater.liga',
-    '!=': 'not_equal.liga'
+    '!=': 'not_equal.liga',
+    '==': 'equal_equal.liga'
   });
 }
 
