@@ -149,13 +149,25 @@ function addRules(font) {
       type: 'gsub_chaining',
       flags: {},
       subtables: [
-        {
+        { // ignore first first' second;
+          match: [ [ first ], [ first ], [ second ] ],
+          apply: [],
+          inputBegins: 1,
+          inputEnds: 2
+        },
+        { // ignore sub first' second second;
+          match: [ [ first ], [ second ], [ second ] ],
+          apply: [],
+          inputBegins: 0,
+          inputEnds: 1
+        },
+        { // sub first' second by LIG;
           match: [ [ first ], [ second ] ],
           apply: [ { at: 0, lookup: firstLookup } ],
           inputBegins: 0,
           inputEnds: 1
         },
-        {
+        { // sub LIG second by to;
           match: [ [ 'LIG' ], [ second ] ],
           apply: [ { at: 1, lookup: secondLookup } ],
           inputBegins: 1,
