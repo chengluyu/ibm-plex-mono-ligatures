@@ -1,5 +1,4 @@
 const leftPad = require('left-pad');
-const inspect = require('util').inspect
 const args = require('./argv')
 const assert = require('assert');
 

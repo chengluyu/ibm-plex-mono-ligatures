@@ -3,7 +3,6 @@ const child_process = require('child_process');
 const path = require('path');
 const mkdirp = require('mkdirp');
 const os = require('os');
-const rimraf = require('rimraf');
 const args = require('./argv')
 
 
