@@ -1,5 +1,5 @@
 const ArgumentParser = require('argparse').ArgumentParser;
-const PackageJSON = require('./package.json');
+const PackageJSON = require('../package.json');
 const path = require('path');
 
 

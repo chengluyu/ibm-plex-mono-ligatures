@@ -13,7 +13,7 @@
 1. Install [otfcc](https://github.com/caryll/otfcc), [Node.js](https://nodejs.org/en/) and NPM (or Yarn).
 2. Clone (or download) [IBM Plex Mono](https://github.com/IBM/plex).
 3. Clone this repo and install all dependencies by run `npm install` (or `yarn install`).
-4. Run `node index.js -i IBM_PLEX_MONO_DIR` (`IBM_PLEX_MONO_DIR` is the folder where IBM Plex Mono font files locate).
+4. Run `node src/index.js -i IBM_PLEX_MONO_DIR` (`IBM_PLEX_MONO_DIR` is the folder where IBM Plex Mono font files locate).
 5. You will find output font files in `build` folder (you can use `-o OUTPUT_FOLDER` to specify another output folder).
 
 **P.S.** If otfcc is not in your `$PATH` (for example, you just simply download pre-built binaries of otfcc on Windows), you can use `-p OTFCC_FOLDER` to specify the folder where otfcc (two executable files: `otfccdump` and `otfccbuild`) locates.
